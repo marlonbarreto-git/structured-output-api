@@ -1,64 +1,80 @@
-# structured-output-api
+# Structured Output API
 
-FastAPI service that converts free text into structured JSON using LLMs with Pydantic validation via [Instructor](https://github.com/jxnl/instructor).
+FastAPI service that converts free text into structured JSON using LLMs with Pydantic validation.
 
-## Features
+## Overview
 
-- **Schema-based extraction**: Define Pydantic models, get validated structured data from any text
-- **Pre-built schemas**: Contact info and invoice extraction out of the box
-- **Instructor integration**: Automatic retries and validation via Instructor library
-- **REST API**: FastAPI endpoints for extraction with OpenAPI docs
-- **Schema registry**: List available schemas and their JSON schemas via API
+Structured Output API takes unstructured text and extracts typed, validated data using LLMs powered by the Instructor library. It exposes a REST API with predefined schemas (contacts, invoices) and returns clean JSON that conforms to Pydantic models, eliminating the need to parse free-form LLM output manually.
 
 ## Architecture
 
 ```
-structured_output_api/
-├── schemas.py      # Pydantic models (ContactInfo, Invoice)
-├── extractor.py    # LLM-powered extraction with Instructor
-└── api.py          # FastAPI endpoints (/extract, /schemas, /health)
+HTTP Request (text + schema_name)
+  |
+  v
+FastAPI Router (/extract/{schema_name})
+  |
+  v
+Extractor (Instructor + OpenAI)
+  |
+  +---> LLM with structured output constraint
+  |
+  v
+Pydantic Model Validation (ContactInfo, Invoice)
+  |
+  v
+JSON Response (validated data + model + latency)
 ```
+
+## Features
+
+- Extract structured data from free text via REST API
+- Pydantic-validated output schemas (ContactInfo, Invoice with line items)
+- Schema registry for discovering available extraction types
+- Instructor library for reliable structured LLM output
+- Latency tracking per extraction request
+- Health check and schema introspection endpoints
+
+## Tech Stack
+
+- Python 3.11+
+- FastAPI + Uvicorn
+- Instructor (structured LLM output)
+- OpenAI SDK
+- Pydantic
 
 ## Quick Start
 
 ```bash
-# Install
-uv sync
-
-# Configure
-export OPENAI_API_KEY="sk-..."
-
-# Run server
+git clone https://github.com/marlonbarreto-git/structured-output-api.git
+cd structured-output-api
+python -m venv .venv && source .venv/bin/activate
+pip install -e ".[dev]"
+export OPENAI_API_KEY=your-key
 uvicorn structured_output_api.api:app --reload
-
-# Extract contact info
-curl -X POST http://localhost:8000/extract/contact \
-  -H "Content-Type: application/json" \
-  -d '{"text": "Hi, I am John Doe from Acme Inc. Email: john@acme.com, Phone: +1-555-0123"}'
-
-# List available schemas
-curl http://localhost:8000/schemas
 ```
 
-## API Endpoints
+## Project Structure
 
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/health` | Health check |
-| GET | `/schemas` | List all extraction schemas with JSON schema |
-| POST | `/extract/{schema_name}` | Extract structured data from text |
+```
+src/structured_output_api/
+  __init__.py
+  api.py          # FastAPI app with /extract, /schemas, /health endpoints
+  extractor.py    # LLM-powered extraction using Instructor
+  schemas.py      # Pydantic models (ContactInfo, Invoice) and registry
+tests/
+  test_api.py
+  test_extractor.py
+  test_schemas.py
+```
 
-## Development
+## Testing
 
 ```bash
-uv sync --all-extras
-uv run pytest tests/ -v --cov=structured_output_api
+pytest -v --cov=src/structured_output_api
 ```
 
-## Roadmap
-
-- **v2**: Dynamic schemas (user-defined Pydantic models via API), retry logic
-- **v3**: Batch processing, streaming partial results, accuracy metrics per schema
+13 tests covering API endpoints, extraction logic, and schema validation.
 
 ## License
 
