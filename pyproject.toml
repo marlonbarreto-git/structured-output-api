@@ -19,6 +19,7 @@ dependencies = [
     "anthropic>=0.43.0",
     "pydantic>=2.10.0",
     "pydantic-settings>=2.7.0",
+    "email-validator>=2.0.0",
 ]
 
 [project.urls]
