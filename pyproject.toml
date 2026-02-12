@@ -2,6 +2,14 @@
 name = "structured-output-api"
 version = "0.1.0"
 description = "API that converts free text into structured JSON using LLMs with Pydantic validation via Instructor."
+license = {text = "MIT"}
+authors = [{name = "Marlon Barreto", email = "mbarretot@hotmail.com"}]
+keywords = ["LLM", "structured-output", "AI", "Pydantic"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "License :: OSI Approved :: MIT License",
+]
 requires-python = ">=3.11"
 dependencies = [
     "fastapi>=0.115.0",
@@ -12,6 +20,11 @@ dependencies = [
     "pydantic>=2.10.0",
     "pydantic-settings>=2.7.0",
 ]
+
+[project.urls]
+Homepage = "https://github.com/marlonbarreto-git/structured-output-api"
+Repository = "https://github.com/marlonbarreto-git/structured-output-api"
+Issues = "https://github.com/marlonbarreto-git/structured-output-api/issues"
 
 [project.optional-dependencies]
 dev = [
